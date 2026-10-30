@@ -66,7 +66,7 @@ namespace SuflyorWindows
         private string[] GetBlocks()
         {
             var text = ScriptBox.Text ?? "";
-            var blocks = Regex.Split(text, @"(?m)^\\s*\\[\\[БЛОК\\]\\]\\s*$|(?m)^\\s*-{5,}\\s*$|(?:\\r?\\n)[ \\t]*(?:\\r?\\n)+")
+            var blocks = Regex.Split(text, @"(?m)^\s*\[\[БЛОК\]\]\s*$|(?m)^\s*-{5,}\s*$|(?:\r?\n)[ \t]*(?:\r?\n)+")
                 .Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
             return blocks.Length == 0 ? new[] { text } : blocks;
         }
