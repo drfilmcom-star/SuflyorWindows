@@ -5,6 +5,10 @@ using System.Windows;
 using System.Windows.Controls;
 using SuflyorWindows.Audio;
 using SuflyorWindows.Tracking;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SuflyorWindows
 {
@@ -18,9 +22,8 @@ namespace SuflyorWindows
         public MainWindow()
         {
             InitializeComponent();
-            ScriptBox.Text = "[[БЛОК]]\nПервый блок сценария. Вставьте сюда текст.\n\n[[БЛОК]]\nВторой блок сценария.";
+            ScriptBox.Text = "Первый блок сценария. Вставьте сюда текст.\n\nВторой блок сценария после пустой строки.\n\n-----\nТретий блок после разделителя.";
             UpdateBlockLabel();
-            tracker.SetScript(GetBlocks()[currentBlock]);
             speech.StatusChanged += status => Dispatcher.Invoke(() => SpeechStatus.Text = status);
             speech.TextRecognized += (text, isFinal) => Dispatcher.Invoke(() =>
             {
@@ -32,18 +35,38 @@ namespace SuflyorWindows
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog { Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*" };
-            if (dialog.ShowDialog() == true)
+            var dialog = new OpenFileDialog { Filter = "Документы Word (*.docx)|*.docx|Текстовые файлы (*.txt)|*.txt" };
+            if (dialog.ShowDialog() != true) return;
+            try
             {
-                try { ScriptBox.Text = System.IO.File.ReadAllText(dialog.FileName); currentBlock = 0; UpdateBlockLabel(); }
-                catch (Exception ex) { MessageBox.Show("Не удалось открыть файл:\n" + ex.Message, "Суфлёр"); }
+                string content;
+                if (System.IO.Path.GetExtension(dialog.FileName).Equals(".docx", StringComparison.OrdinalIgnoreCase))
+                {
+                    using var doc = WordprocessingDocument.Open(dialog.FileName, false);
+                    var body = doc.MainDocumentPart?.Document.Body;
+                    var sb = new StringBuilder();
+                    if (body != null)
+                    {
+                        foreach (var paragraph in body.Elements<Paragraph>())
+                        {
+                            var line = string.Concat(paragraph.Descendants<Text>().Select(t => t.Text));
+                            sb.AppendLine(line);
+                        }
+                    }
+                    content = sb.ToString();
+                }
+                else content = System.IO.File.ReadAllText(dialog.FileName, Encoding.UTF8);
+                ScriptBox.Text = content;
+                currentBlock = 0;
+                UpdateBlockLabel();
             }
+            catch (Exception ex) { MessageBox.Show("Не удалось открыть документ:\n" + ex.Message, "Суфлёр"); }
         }
 
         private string[] GetBlocks()
         {
             var text = ScriptBox.Text ?? "";
-            var blocks = System.Text.RegularExpressions.Regex.Split(text, @"(?im)^\s*\[\[БЛОК\]\]\s*$")
+            var blocks = Regex.Split(text, @"(?m)^\\s*\\[\\[БЛОК\\]\\]\\s*$|(?m)^\\s*-{5,}\\s*$|(?:\\r?\\n)[ \\t]*(?:\\r?\\n)+")
                 .Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
             return blocks.Length == 0 ? new[] { text } : blocks;
         }
@@ -101,7 +124,7 @@ namespace SuflyorWindows
             speech.Stop();
             StartVoiceButton.IsEnabled = true;
             StopVoiceButton.IsEnabled = false;
-            SpeechStatus.Text = "Распознавание остановлено. Перезапустите приложение для нового сеанса.";
+            SpeechStatus.Text = "Распознавание остановлено";
         }
 
         protected override void OnClosed(EventArgs e)
@@ -112,11 +135,11 @@ namespace SuflyorWindows
 
         private void ResetBlockButton_Click(object sender, RoutedEventArgs e)
         {
-            if (output == null || !output.IsVisible) ShowOutputButton_Click(sender, e);
             currentBlock = Math.Max(0, Math.Min(currentBlock, GetBlocks().Length - 1));
-            output!.SetScript(GetBlocks(), currentBlock);
             tracker.Reset(0);
             speech.ResetUtterance();
+            if (output == null || !output.IsVisible) ShowOutputButton_Click(sender, e);
+            output!.SetScript(GetBlocks(), currentBlock);
             output.ResetToBlockStart();
             UpdateBlockLabel();
         }
