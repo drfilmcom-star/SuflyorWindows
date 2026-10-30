@@ -23,6 +23,16 @@ namespace SuflyorWindows
 
         public void ResetToBlockStart() => TextScroller.ScrollToTop();
 
+        public void SetProgress(int position, int total)
+        {
+            if (total <= 0) return;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var ratio = Math.Clamp((double)position / total, 0.0, 1.0);
+                TextScroller.ScrollToVerticalOffset(TextScroller.ScrollableHeight * ratio);
+            }));
+        }
+
         private void Smaller_Click(object sender, RoutedEventArgs e) => PromptText.FontSize = Math.Max(20, PromptText.FontSize - 4);
         private void Larger_Click(object sender, RoutedEventArgs e) => PromptText.FontSize = Math.Min(120, PromptText.FontSize + 4);
 
