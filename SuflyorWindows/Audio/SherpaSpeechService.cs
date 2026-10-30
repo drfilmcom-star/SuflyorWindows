@@ -131,6 +131,24 @@ public sealed class SherpaSpeechService : IDisposable
         }
     }
 
+    public void Stop()
+    {
+        _microphone?.StopRecording();
+        _microphone?.Dispose();
+        _microphone = null;
+        _cancel?.Cancel();
+        try { _decodeTask?.Wait(1500); } catch { }
+        _cancel?.Dispose();
+        _cancel = null;
+        _decodeTask = null;
+        _stream?.Dispose();
+        _stream = null;
+        _recognizer?.Dispose();
+        _recognizer = null;
+        while (_audio.TryDequeue(out _)) { }
+        _lastPartial = "";
+    }
+
     public void ResetUtterance()
     {
         while (_audio.TryDequeue(out _)) { }
@@ -142,13 +160,6 @@ public sealed class SherpaSpeechService : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
-        _microphone?.StopRecording();
-        _microphone?.Dispose();
-        _microphone = null;
-        _cancel?.Cancel();
-        try { _decodeTask?.Wait(1500); } catch { }
-        _stream?.Dispose();
-        _recognizer?.Dispose();
-        _cancel?.Dispose();
+        Stop();
     }
 }
