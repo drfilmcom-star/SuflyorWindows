@@ -14,6 +14,8 @@
    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
     <Button x:Name="OpenButton" Content="Открыть TXT" Click="OpenButton_Click" Padding="14,8" Margin="8,0"/>
     <Button x:Name="ShowOutputButton" Content="Окно ведущего" Click="ShowOutputButton_Click" Padding="14,8" Margin="8,0"/>
+    <Button x:Name="StartVoiceButton" Content="Начать распознавание" Click="StartVoiceButton_Click" Padding="14,8" Margin="8,0"/>
+    <Button x:Name="StopVoiceButton" Content="Остановить" Click="StopVoiceButton_Click" Padding="14,8" Margin="8,0" IsEnabled="False"/>
    </StackPanel>
   </DockPanel>
   <Grid Grid.Row="1">
@@ -35,6 +37,8 @@
      <Button Content="Суфлёр заново" Click="ResetBlockButton_Click" Padding="12,10" Margin="0,0,0,10"/>
      <Button Content="Показать / обновить текст" Click="RefreshOutputButton_Click" Padding="12,10" Margin="0,0,0,20"/>
      <Separator Background="#454D5B" Margin="0,0,0,16"/>
+     <TextBlock x:Name="SpeechStatus" Text="Распознавание выключено" TextWrapping="Wrap" Foreground="#8FCBFF" Margin="0,0,0,10"/>
+     <TextBlock x:Name="RecognizedText" Text="Здесь появится распознанная речь" TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,0,0,14"/>
      <TextBlock Text="Этап 1: редактор сценария и отдельное окно ведущего." TextWrapping="Wrap" Foreground="#AAB4C4"/>
      <TextBlock Text="Голосовое сопровождение: подключение локального движка sherpa-onnx запланировано следующим этапом." TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,10,0,0"/>
     </StackPanel>
