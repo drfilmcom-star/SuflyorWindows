@@ -1,0 +1,45 @@
+<Window x:Class="SuflyorWindows.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Суфлёр Windows" Height="760" Width="1120" MinHeight="560" MinWidth="820"
+ WindowStartupLocation="CenterScreen" Background="#171A20" Foreground="#F2F4F8">
+ <Grid Margin="18">
+  <Grid.RowDefinitions>
+   <RowDefinition Height="Auto"/>
+   <RowDefinition Height="*"/>
+   <RowDefinition Height="Auto"/>
+  </Grid.RowDefinitions>
+  <DockPanel Grid.Row="0" Margin="0,0,0,14">
+   <TextBlock Text="СУФЛЁР" FontSize="23" FontWeight="Bold" VerticalAlignment="Center"/>
+   <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+    <Button x:Name="OpenButton" Content="Открыть TXT" Click="OpenButton_Click" Padding="14,8" Margin="8,0"/>
+    <Button x:Name="ShowOutputButton" Content="Окно ведущего" Click="ShowOutputButton_Click" Padding="14,8" Margin="8,0"/>
+   </StackPanel>
+  </DockPanel>
+  <Grid Grid.Row="1">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="3*"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+   <Border Grid.Column="0" Background="#222731" CornerRadius="8" Padding="12" Margin="0,0,12,0">
+    <DockPanel>
+     <TextBlock DockPanel.Dock="Top" Text="ТЕКСТ СЦЕНАРИЯ. Маркер блока: [[БЛОК]]" Foreground="#AAB4C4" Margin="0,0,0,10"/>
+     <TextBox x:Name="ScriptBox" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
+       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+       FontSize="17" Background="#222731" Foreground="#F2F4F8" BorderThickness="0"
+       TextChanged="ScriptBox_TextChanged"/>
+    </DockPanel>
+   </Border>
+   <Border Grid.Column="1" Background="#222731" CornerRadius="8" Padding="16">
+    <StackPanel>
+     <TextBlock Text="УПРАВЛЕНИЕ" FontSize="15" FontWeight="Bold" Margin="0,0,0,14"/>
+     <TextBlock Text="Текущий блок" Foreground="#AAB4C4"/>
+     <TextBlock x:Name="BlockLabel" Text="1" FontSize="28" FontWeight="Bold" Margin="0,2,0,16"/>
+     <Button Content="Суфлёр заново" Click="ResetBlockButton_Click" Padding="12,10" Margin="0,0,0,10"/>
+     <Button Content="Показать / обновить текст" Click="RefreshOutputButton_Click" Padding="12,10" Margin="0,0,0,20"/>
+     <Separator Background="#454D5B" Margin="0,0,0,16"/>
+     <TextBlock Text="Этап 1: редактор сценария и отдельное окно ведущего." TextWrapping="Wrap" Foreground="#AAB4C4"/>
+     <TextBlock Text="Голосовое сопровождение: подключение локального движка sherpa-onnx запланировано следующим этапом." TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,10,0,0"/>
+    </StackPanel>
+   </Border>
+  </Grid>
+  <TextBlock Grid.Row="2" Text="Windows 10/11 x64 • прототип • .NET 8" Foreground="#8993A3" Margin="2,12,0,0"/>
+ </Grid>
+</Window>
