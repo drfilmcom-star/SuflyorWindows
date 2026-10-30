@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SuflyorWindows.Audio;
+using SuflyorWindows.Tracking;
 
 namespace SuflyorWindows
 {
@@ -10,12 +12,22 @@ namespace SuflyorWindows
     {
         private PrompterWindow? output;
         private int currentBlock = 0;
+        private readonly SherpaSpeechService speech = new();
+        private readonly BasicScriptTracker tracker = new();
 
         public MainWindow()
         {
             InitializeComponent();
             ScriptBox.Text = "[[БЛОК]]\nПервый блок сценария. Вставьте сюда текст.\n\n[[БЛОК]]\nВторой блок сценария.";
             UpdateBlockLabel();
+            tracker.SetScript(GetBlocks()[currentBlock]);
+            speech.StatusChanged += status => Dispatcher.Invoke(() => SpeechStatus.Text = status);
+            speech.TextRecognized += (text, isFinal) => Dispatcher.Invoke(() =>
+            {
+                RecognizedText.Text = (isFinal ? "Фраза: " : "Сейчас: ") + text;
+                if (tracker.AddHypothesis(text, isFinal, out var pos) && output != null && output.IsVisible)
+                    output.SetProgress(pos, tracker.Count);
+            });
         }
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
@@ -40,6 +52,7 @@ namespace SuflyorWindows
         {
             var blocks = GetBlocks();
             currentBlock = Math.Max(0, Math.Min(currentBlock, blocks.Length - 1));
+            tracker.SetScript(blocks[currentBlock]);
             BlockLabel.Text = (currentBlock + 1) + " / " + blocks.Length;
         }
 
@@ -65,6 +78,36 @@ namespace SuflyorWindows
         {
             if (output == null || !output.IsVisible) ShowOutputButton_Click(sender, e);
             else output.SetScript(GetBlocks(), currentBlock);
+        }
+
+        private async void StartVoiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                tracker.SetScript(GetBlocks()[currentBlock]);
+                await speech.StartAsync();
+                StartVoiceButton.IsEnabled = false;
+                StopVoiceButton.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Не удалось запустить распознавание", MessageBoxButton.OK, MessageBoxImage.Error);
+                SpeechStatus.Text = "Распознавание не запущено";
+            }
+        }
+
+        private void StopVoiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            speech.Dispose();
+            StartVoiceButton.IsEnabled = false;
+            StopVoiceButton.IsEnabled = false;
+            SpeechStatus.Text = "Распознавание остановлено. Перезапустите приложение для нового сеанса.";
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            speech.Dispose();
+            base.OnClosed(e);
         }
 
         private void ResetBlockButton_Click(object sender, RoutedEventArgs e)
