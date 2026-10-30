@@ -17,4 +17,10 @@
     <PackageReference Include="org.k2fsa.sherpa.onnx" Version="2.0.1" />
       <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models/asr-ru/**/*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
