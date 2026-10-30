@@ -12,7 +12,7 @@
   <DockPanel Grid.Row="0" Margin="0,0,0,14">
    <TextBlock Text="СУФЛЁР" FontSize="23" FontWeight="Bold" VerticalAlignment="Center"/>
    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-    <Button x:Name="OpenButton" Content="Открыть TXT" Click="OpenButton_Click" Padding="14,8" Margin="8,0"/>
+    <Button x:Name="OpenButton" Content="Открыть DOCX / TXT" Click="OpenButton_Click" Padding="14,8" Margin="8,0"/>
     <Button x:Name="ShowOutputButton" Content="Окно ведущего" Click="ShowOutputButton_Click" Padding="14,8" Margin="8,0"/>
     <Button x:Name="StartVoiceButton" Content="Начать распознавание" Click="StartVoiceButton_Click" Padding="14,8" Margin="8,0"/>
     <Button x:Name="StopVoiceButton" Content="Остановить" Click="StopVoiceButton_Click" Padding="14,8" Margin="8,0" IsEnabled="False"/>
@@ -22,7 +22,7 @@
    <Grid.ColumnDefinitions><ColumnDefinition Width="3*"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
    <Border Grid.Column="0" Background="#222731" CornerRadius="8" Padding="12" Margin="0,0,12,0">
     <DockPanel>
-     <TextBlock DockPanel.Dock="Top" Text="ТЕКСТ СЦЕНАРИЯ. Маркер блока: [[БЛОК]]" Foreground="#AAB4C4" Margin="0,0,0,10"/>
+     <TextBlock DockPanel.Dock="Top" Text="ТЕКСТ СЦЕНАРИЯ. Разделители блоков: пустая строка или -----" Foreground="#AAB4C4" Margin="0,0,0,10"/>
      <TextBox x:Name="ScriptBox" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
        VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
        FontSize="17" Background="#222731" Foreground="#F2F4F8" BorderThickness="0"
@@ -39,8 +39,8 @@
      <Separator Background="#454D5B" Margin="0,0,0,16"/>
      <TextBlock x:Name="SpeechStatus" Text="Распознавание выключено" TextWrapping="Wrap" Foreground="#8FCBFF" Margin="0,0,0,10"/>
      <TextBlock x:Name="RecognizedText" Text="Здесь появится распознанная речь" TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,0,0,14"/>
-     <TextBlock Text="Этап 1: редактор сценария и отдельное окно ведущего." TextWrapping="Wrap" Foreground="#AAB4C4"/>
-     <TextBlock Text="Голосовое сопровождение: подключение локального движка sherpa-onnx запланировано следующим этапом." TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,10,0,0"/>
+     <TextBlock Text="Окно ведущего предназначено для отдельного монитора с телесуфлёрным стеклом." TextWrapping="Wrap" Foreground="#AAB4C4"/>
+     <TextBlock Text="Распознавание речи выполняется локально, без облачных сервисов." TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,10,0,0"/>
     </StackPanel>
    </Border>
   </Grid>
