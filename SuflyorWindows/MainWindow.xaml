@@ -37,6 +37,9 @@
      <Button Content="Суфлёр заново" Click="ResetBlockButton_Click" Padding="12,10" Margin="0,0,0,10"/>
      <Button Content="Показать / обновить текст" Click="RefreshOutputButton_Click" Padding="12,10" Margin="0,0,0,20"/>
      <Separator Background="#454D5B" Margin="0,0,0,16"/>
+     <TextBlock Text="Аудиовход" Foreground="#AAB4C4" Margin="0,0,0,5"/>
+     <ComboBox x:Name="AudioDeviceBox" MinHeight="32" Margin="0,0,0,12"/>
+     <Button Content="Обновить список устройств" Click="RefreshAudioDevices_Click" Padding="10,7" Margin="0,0,0,12"/>
      <TextBlock x:Name="SpeechStatus" Text="Распознавание выключено" TextWrapping="Wrap" Foreground="#8FCBFF" Margin="0,0,0,10"/>
      <TextBlock x:Name="RecognizedText" Text="Здесь появится распознанная речь" TextWrapping="Wrap" Foreground="#AAB4C4" Margin="0,0,0,14"/>
      <TextBlock Text="Окно ведущего предназначено для отдельного монитора с телесуфлёрным стеклом." TextWrapping="Wrap" Foreground="#AAB4C4"/>
