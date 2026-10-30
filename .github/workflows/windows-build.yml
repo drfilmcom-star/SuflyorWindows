@@ -24,10 +24,10 @@ jobs:
         run: dotnet restore SuflyorWindows.sln
 
       - name: Build
-        run: dotnet build SuflyorWindows.sln --configuration Release --no-restore -p:Platform=x64
+        run: dotnet build SuflyorWindows.sln --configuration Release --no-restore
 
       - name: Publish self-contained x64
-        run: dotnet publish SuflyorWindows/SuflyorWindows.csproj --configuration Release --runtime win-x64 --self-contained true -p:Platform=x64 -o artifacts/SuflyorWindows-win-x64
+        run: dotnet publish SuflyorWindows/SuflyorWindows.csproj --configuration Release --runtime win-x64 --self-contained true -p:PlatformTarget=x64 -o artifacts/SuflyorWindows-win-x64
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
