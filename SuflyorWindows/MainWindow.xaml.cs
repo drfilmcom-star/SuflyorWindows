@@ -98,8 +98,8 @@ namespace SuflyorWindows
 
         private void StopVoiceButton_Click(object sender, RoutedEventArgs e)
         {
-            speech.Dispose();
-            StartVoiceButton.IsEnabled = false;
+            speech.Stop();
+            StartVoiceButton.IsEnabled = true;
             StopVoiceButton.IsEnabled = false;
             SpeechStatus.Text = "Распознавание остановлено. Перезапустите приложение для нового сеанса.";
         }
@@ -115,6 +115,8 @@ namespace SuflyorWindows
             if (output == null || !output.IsVisible) ShowOutputButton_Click(sender, e);
             currentBlock = Math.Max(0, Math.Min(currentBlock, GetBlocks().Length - 1));
             output!.SetScript(GetBlocks(), currentBlock);
+            tracker.Reset(0);
+            speech.ResetUtterance();
             output.ResetToBlockStart();
             UpdateBlockLabel();
         }
