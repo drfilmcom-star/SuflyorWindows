@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Text;
 using System.Text.RegularExpressions;
+using NAudio.Wave;
 
 namespace SuflyorWindows
 {
@@ -24,6 +25,7 @@ namespace SuflyorWindows
             InitializeComponent();
             ScriptBox.Text = "Первый блок сценария. Вставьте сюда текст.\n\nВторой блок сценария после пустой строки.\n\n-----\nТретий блок после разделителя.";
             UpdateBlockLabel();
+            RefreshAudioDevices();
             speech.StatusChanged += status => Dispatcher.Invoke(() => SpeechStatus.Text = status);
             speech.TextRecognized += (text, isFinal) => Dispatcher.Invoke(() =>
             {
@@ -31,6 +33,29 @@ namespace SuflyorWindows
                 if (tracker.AddHypothesis(text, isFinal, out var pos) && output != null && output.IsVisible)
                     output.SetProgress(pos, tracker.Count);
             });
+        }
+
+        private void RefreshAudioDevices()
+        {
+            AudioDeviceBox.Items.Clear();
+            try
+            {
+                for (var i = 0; i < WaveIn.DeviceCount; i++)
+                {
+                    var info = WaveIn.GetCapabilities(i);
+                    AudioDeviceBox.Items.Add(new AudioInputItem(i, info.ProductName));
+                }
+            }
+            catch (Exception ex) { SpeechStatus.Text = "Не удалось получить список аудиовходов: " + ex.Message; }
+            if (AudioDeviceBox.Items.Count > 0) AudioDeviceBox.SelectedIndex = 0;
+            else AudioDeviceBox.Items.Add("Входные устройства не найдены");
+        }
+
+        private void RefreshAudioDevices_Click(object sender, RoutedEventArgs e) => RefreshAudioDevices();
+
+        private sealed record AudioInputItem(int Index, string Name)
+        {
+            public override string ToString() => Name;
         }
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
@@ -108,7 +133,9 @@ namespace SuflyorWindows
             try
             {
                 tracker.SetScript(GetBlocks()[currentBlock]);
-                await speech.StartAsync();
+                var device = AudioDeviceBox.SelectedItem as AudioInputItem;
+                if (device == null) throw new InvalidOperationException("Выберите доступный аудиовход.");
+                await speech.StartAsync(device.Index);
                 StartVoiceButton.IsEnabled = false;
                 StopVoiceButton.IsEnabled = true;
             }
