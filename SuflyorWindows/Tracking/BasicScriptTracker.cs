@@ -12,7 +12,8 @@ public sealed class BasicScriptTracker
     private static readonly HashSet<string> Fillers = new(StringComparer.Ordinal)
         { "э", "ээ", "эээ", "эм", "эмм", "мм", "ммм", "хм", "ага", "угу" };
     private string[] _script = Array.Empty<string>();
-    private readonly Queue<string> _heard = new();
+    private readonly List<string> _finalized = new();
+    private string[] _partial = Array.Empty<string>();
     private int _pendingTarget = -1;
 
     public int Position { get; private set; }
@@ -28,19 +29,20 @@ public sealed class BasicScriptTracker
     {
         Position = Math.Clamp(position, 0, _script.Length);
         _pendingTarget = -1;
-        _heard.Clear();
+        _finalized.Clear();
+        _partial = Array.Empty<string>();
     }
 
     public bool AddHypothesis(string text, bool isFinal, out int newPosition)
     {
-        foreach (var word in Words(text))
+        _partial = Words(text).Where(w => !Fillers.Contains(w)).ToArray();
+        if (isFinal)
         {
-            if (Fillers.Contains(word)) continue;
-            if (_heard.Count > 12) _heard.Dequeue();
-            if (_heard.Count == 0 || _heard.Last() != word) _heard.Enqueue(word);
+            _finalized.AddRange(_partial);
+            if (_finalized.Count > 16) _finalized.RemoveRange(0, _finalized.Count - 16);
+            _partial = Array.Empty<string>();
         }
-
-        var heard = _heard.ToArray();
+        var heard = _finalized.Concat(_partial).TakeLast(12).ToArray();
         newPosition = Position;
         if (heard.Length == 0 || _script.Length == 0) return false;
 
